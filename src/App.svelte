@@ -3,9 +3,9 @@
   import "./app.css";
   import { onMount } from "svelte";
 
-  let shapeSize = 110;
-  let shapeColor = "#ff0800";
-  let shapeOpacity = 1;
+  let shapeSize = 150;
+  let shapeColor = "#5754E7";
+  let shapeOpacity = 0.7;
   let shapeRotation = 0;
   let shapes = [];
 
@@ -52,6 +52,7 @@
   };
 
   const handleSizeChange = (event) => {
+    console.log("poggers");
     shapeSize = Number(event.target.value);
     for (let i = 0; i < selectedShapes.length; i++) {
       const index = shapes.findIndex(
@@ -161,6 +162,24 @@
     }
   };
 
+  function saveSvgAsFile() {
+    const svgElement = document.querySelector("svg");
+
+    const svgXml = new XMLSerializer().serializeToString(svgElement);
+
+    const blob = new Blob([svgXml], { type: "image/svg+xml" });
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "svg_file.svg";
+
+    link.dispatchEvent(new MouseEvent("click"));
+
+    URL.revokeObjectURL(url);
+  }
+
   onMount(() => {
     svg.addEventListener("click", (event) => {
       if (event.target === svg && !isDragging) {
@@ -179,8 +198,12 @@
     });
 
     window.addEventListener("mousemove", (event) => {
-      shapes.forEach((shape) => handleMouseMove(event, shape));
-      isDragging = true;
+      const isInputClicked = event.target.closest("input");
+
+      if (!isInputClicked) {
+        shapes.forEach((shape) => handleMouseMove(event, shape));
+        isDragging = true;
+      }
     });
 
     aside.addEventListener("click", (event) => {
@@ -190,7 +213,10 @@
     });
 
     window.addEventListener("mouseup", (event) => {
-      shapes.forEach((shape) => stopDragging(event, shape));
+      const isInputClicked = event.target.closest("input");
+      if (!isInputClicked) {
+        shapes.forEach((shape) => stopDragging(event, shape));
+      }
     });
   });
 
@@ -312,70 +338,86 @@
         <label for="input-rotate">Rotate</label>
         <input
           id="input-rotate"
-          type="range"
-          class="range range-accent"
+          type="number"
           min="0"
           max="360"
           step="10"
           bind:value={shapeRotation}
-          on:input={handleRotationChange}
+          on:change={handleRotationChange}
         />
       </div>
       <div>
         <label for="input-size">Size</label>
         <input
           id="input-size"
-          type="range"
-          class="range range-accent"
+          type="number"
           min="10"
-          max="210"
-          on:input={handleSizeChange}
+          max="400"
+          step="10"
           bind:value={shapeSize}
+          on:change={handleSizeChange}
         />
       </div>
-
       <div>
         <label for="input-opacity">Opacity</label>
         <input
           id="input-opacity"
-          type="range"
-          class="range range-accent"
-          min="0"
+          type="number"
+          min="0.1"
           max="1"
           step="0.1"
           bind:value={shapeOpacity}
-          on:input={handleOpacityChange}
+          on:change={handleOpacityChange}
         />
       </div>
 
-      <div>
-        <label for="input-color">Color</label>
-        <input
-          id="input-color"
-          type="color"
-          bind:value={shapeColor}
-          on:input={handleColorChange}
-        />
-      </div>
+      <input
+        id="input-color"
+        type="color"
+        bind:value={shapeColor}
+        on:input={handleColorChange}
+      />
     </div>
-    <div class="flex flex-wrap gap-2">
+    <div class="flex flex-wrap gap-6">
       <select
-        class="select text-black"
+        class="select bg-[#F7FAFB] text-black shadow-md"
         bind:value={currentShape}
         on:change={(event) => (currentShape = event.target.value)}
       >
         <option>Circle</option>
         <option>Rectangle</option>
       </select>
-      <button on:click={addShape} class="btn btn-success">Add</button>
-      <button on:click={deleteShapes} class="btn btn-error">Delete</button>
-      <!-- <button on:click={() => window.print()} class="btn btn-info">Print</button
-      > -->
-      <button on:click={downloadJSON} class="btn btn-secondary"
-        >Save Data</button
+      <button
+        on:click={addShape}
+        class="text-2xl m-auto text-[#46414D] transition hover:text-green-600 hover:scale-110 active:scale-95"
+        ><i class="fa-solid fa-plus" /></button
       >
-      <label for="file" class="btn">Load Data</label>
+      <button
+        on:click={deleteShapes}
+        class="text-2xl text-[#46414D] transition hover:text-red-600 hover:scale-110 active:scale-95"
+        ><i class="fa-solid fa-trash" /></button
+      >
+
+      <div class="divider lg:divider-horizontal" />
+
+      <button
+        on:click={downloadJSON}
+        class="text-2xl items-center text-[#46414D] transition hover:text-sky-600 hover:scale-110 active:scale-95"
+        ><i class="fa-solid fa-download" /></button
+      >
+      <label
+        for="file"
+        class="text-2xl m-auto text-[#46414D] cursor-pointer transition hover:text-fuchsia-600 hover:scale-110 active:scale-95"
+        ><i class="fa-solid fa-upload" /></label
+      >
       <input type="file" id="file" on:change={loadJSON} style="display:none" />
+      <button
+        on:click={saveSvgAsFile}
+        class="btn bg-[#F45930] text-white rounded-xl"
+      >
+        <i class="fa-solid fa-share text-white mr-2" />
+        Share</button
+      >
     </div>
   </nav>
   <div class="flex justify-center h-[70%] lg:h-[90%]">
@@ -428,13 +470,13 @@
     </span>
     <aside
       bind:this={aside}
-      class="h-full bg-primary w-[25%] lg:w-[10%] ml-auto overflow-y-auto text-left flex flex-col rounded-bl-2xl border-l-4 border-gray-300"
+      class="bg-[#F7FAFB] w-[25%] lg:w-[10%] overflow-y-auto text-left text-black rounded-bl-3xl border-l-2 border-black"
     >
       {#each shapes as shape}
-        <div class="border-b-4 border-gray-300">
+        <div class="border-b-2 border-gray-300">
           {#if !shape.isEditing}
             <button
-              class="text-white w-full flex justify-between p-3 text-lg font-semibold"
+              class="w-full flex justify-between p-3 text-lg font-semibold"
               on:click={() => {
                 selectByID(shape);
               }}
@@ -449,7 +491,7 @@
           {:else}
             <input
               type="text"
-              class="bg-transparent text-white p-3 text-lg font-semibold"
+              class="bg-transparent p-3 text-lg font-semibold"
               class:selected={shape.selected}
               autoFocus
               bind:value={shape.name}
@@ -485,32 +527,36 @@
     stroke: black;
   }
 
-  nav {
-    @apply p-5 rounded-bl-[3rem] bg-primary border-b-4 border-gray-300 flex justify-evenly text-white text-lg text-center items-center;
+  button {
+    @apply border-none;
   }
 
-  input[type="range"] {
-    @apply max-w-[8rem];
+  nav {
+    @apply bg-[#F7FAFB] border-b-2 border-black flex justify-evenly text-black text-lg text-center items-center;
   }
 
   input[type="color"] {
-    @apply h-10 w-10 rounded-sm cursor-pointer border-none appearance-none bg-transparent;
+    @apply h-[3rem] w-[2.8rem] rounded-full cursor-pointer bg-transparent;
   }
 
   input[type="color"]::-webkit-color-swatch {
-    @apply rounded-lg border-none;
+    @apply rounded-full border-none;
   }
 
   input[type="color"]::-moz-color-swatch {
-    @apply rounded-lg border-none;
+    @apply rounded-full border-none;
+  }
+
+  input[type="number"] {
+    @apply pl-2 p-1 rounded-lg border border-[#46414D] w-[4.5rem];
   }
 
   .wrapper {
-    @apply flex justify-center text-center items-center align-middle gap-4;
+    @apply flex justify-center text-center items-center align-middle gap-6;
   }
 
   .wrapper div {
-    @apply flex flex-col items-center gap-2;
+    @apply flex items-center gap-2;
   }
 
   span {

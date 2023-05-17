@@ -5,11 +5,11 @@
 body {
   background-image: linear-gradient(
       to right,
-      rgb(223, 218, 218) 1px,
+      rgb(240, 240, 240) 1px,
       transparent 1px
     ),
-    linear-gradient(to bottom, rgb(223, 218, 218) 1px, transparent 1px);
-  background-size: 60px 60px;
+    linear-gradient(to bottom, rgb(240, 240, 240) 1px, transparent 1px);
+  background-size: 50px 50px;
 }
 
 .selection-area {
