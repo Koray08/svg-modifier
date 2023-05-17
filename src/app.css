@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-image: linear-gradient(
+      to right,
+      rgb(223, 218, 218) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, rgb(223, 218, 218) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.selection-area {
+  background: rgba(46, 115, 252, 0.11);
+  border: 2px solid rgba(98, 155, 255, 0.81);
+  border-radius: 0.1em;
+}
