@@ -22,9 +22,7 @@
     const link = document.createElement("a");
     link.href = url;
     link.download = "shapesJSON";
-    document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
     URL.revokeObjectURL(url);
   }
 
@@ -108,7 +106,6 @@
   };
 
   const startDragging = (event, shape) => {
-    event.preventDefault();
     selectedShapes = [];
     const updatedshapes = shapes.map((c) => {
       if (c.id === shape.id) {
@@ -131,7 +128,6 @@
   };
 
   const stopDragging = (event, shape) => {
-    event.preventDefault();
     const updatedshapes = shapes.map((c) => {
       if (c.id === shape.id) {
         return { ...c, isDragging: false };
@@ -142,7 +138,6 @@
   };
 
   const handleMouseMove = (event, shape) => {
-    event.preventDefault();
     if (shape.isDragging) {
       const deltaX = event.clientX - shape.prevX;
       const deltaY = event.clientY - shape.prevY;
@@ -164,19 +159,13 @@
 
   function saveSvgAsFile() {
     const svgElement = document.querySelector("svg");
-
     const svgXml = new XMLSerializer().serializeToString(svgElement);
-
     const blob = new Blob([svgXml], { type: "image/svg+xml" });
-
     const url = URL.createObjectURL(blob);
-
     const link = document.createElement("a");
     link.href = url;
     link.download = "svg_file.svg";
-
-    link.dispatchEvent(new MouseEvent("click"));
-
+    link.click();
     URL.revokeObjectURL(url);
   }
 
