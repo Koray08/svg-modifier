@@ -386,6 +386,7 @@
       >
         <option>Circle</option>
         <option>Rectangle</option>
+        <option>Custom</option>
       </select>
       <button
         on:click={addShape}
@@ -464,6 +465,35 @@
               on:mouseup={(event) => stopDragging(event, shape)}
               on:mousemove={(event) => handleMouseMove(event, shape)}
             />
+          {:else if shape.type === "Custom"}
+            <g
+              fill={shape.color}
+              opacity={shape.opacity}
+              transform={`rotate(${shape.rotate} ${shape.x} ${shape.y})`}
+              stroke-width={selectedShapes.some(
+                (selected) => selected.id == shape.id
+              )
+                ? 3
+                : 0.5}
+              on:mousedown={(event) => startDragging(event, shape)}
+              on:mouseup={(event) => stopDragging(event, shape)}
+              on:mousemove={(event) => handleMouseMove(event, shape)}
+            >
+              <circle
+                id={shape.id}
+                name={shape.name}
+                cx={shape.x}
+                cy={shape.y}
+                r={shape.size / 2}
+              />
+
+              <polygon
+                points={`${shape.x},${shape.y - shape.size / 2}
+                      ${shape.x - shape.size / 4},${shape.y + shape.size / 4}
+                      ${shape.x + shape.size / 4},${shape.y + shape.size / 4}`}
+                fill="black"
+              />
+            </g>
           {/if}
         {/each}
       </svg>
